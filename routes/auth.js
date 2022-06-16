@@ -2,6 +2,7 @@ const router = require('express').Router();
 const User = require('../models/User');
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
+const { verifyToken, requireAuth, verifyToken2 } = require('./verifyToken');
 
 router.post('/register', async (req, res) => {
   try {
@@ -24,8 +25,7 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const user = await User.findOne({ username: req.body.username });
-    if (!user) 
-    return res.status(400).json('Mauvais pseudo ou Mot de passe');
+    if (!user) return res.status(400).json('Mauvais pseudo ou Mot de passe');
 
     const validPassword = await argon2.verify(user.password, req.body.password);
     if (!validPassword)
@@ -41,12 +41,26 @@ router.post('/login', async (req, res) => {
     );
 
     const { password, ...others } = user._doc;
-
+console.log('login',{ ...others, accessToken })
     res.status(200).json({ ...others, accessToken });
+    
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
   }
+});
+
+router.post('/logout', async (req, res) => {
+
+  try {
+    let {currentUser} = req.body;
+    currentUser = false
+    console.log('logout',req.body)
+    res
+      .clearCookie('access_token')
+      .status(200)
+      .json(currentUser );
+  } catch (err) {}
 });
 
 module.exports = router;

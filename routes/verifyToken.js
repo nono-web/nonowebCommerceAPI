@@ -2,6 +2,21 @@ const jwt = require('jsonwebtoken');
 
 require('dotenv').config();
 
+const verifyToken2 = (req, res, next) => {
+  const authHeader = req.headers.token;
+  console.log('headers',req.headers)
+  if (authHeader) {
+    const token = authHeader.split(" ")[1];
+    jwt.verify(token, process.env.JWT_SEC, (err, user) => {
+      if (err) res.status(403).json({message: "Token is not valid!"});
+      req.user = user;
+      next();
+    });
+  } else {
+    return res.status(401).json({message:"You are not authenticated!"});
+  }
+};
+
 const verifyToken = (req, res, next) => {
   const authToken = req.cookies.access_token;
   if (!authToken) {
@@ -36,4 +51,4 @@ const verifyTokenAdmin = (req, res, next) => {
   });
 };
 
-module.exports = { verifyToken, verifyTokenAndAuthorization, verifyTokenAdmin };
+module.exports = { verifyToken, verifyTokenAndAuthorization, verifyTokenAdmin,verifyToken2 };
