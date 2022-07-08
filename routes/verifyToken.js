@@ -51,4 +51,4 @@ const verifyTokenAdmin = (req, res, next) => {
   });
 };
 
-module.exports = { verifyToken, verifyTokenAndAuthorization, verifyTokenAdmin,verifyToken2 };
+module.exports = { verifyToken, verifyTokenAndAuthorization, verifyTokenAdmin };
